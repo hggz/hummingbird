@@ -23,6 +23,9 @@ import Musl
 import Darwin.C
 #elseif canImport(Android)
 import Android
+#elseif canImport(WinSDK)
+import WinSDK
+import ucrt
 #else
 #error("Unsupported platform")
 #endif
@@ -132,11 +135,20 @@ public struct Environment: Sendable, Decodable, ExpressibleByDictionaryLiteral {
     ///   - value: Environment variable name value
     public mutating func set(_ s: String, value: String?) {
         self.values[s.lowercased()] = value
+#if os(Windows)
+        // Windows UCRT uses _putenv_s; passing an empty value unsets.
+        if let value {
+            _ = _putenv_s(s, value)
+        } else {
+            _ = _putenv_s(s, "")
+        }
+#else
         if let value {
             setenv(s, value, 1)
         } else {
             unsetenv(s)
         }
+#endif
     }
 
     /// Merge two environment variable sets together and return result
@@ -165,6 +177,10 @@ public struct Environment: Sendable, Decodable, ExpressibleByDictionaryLiteral {
 
     /// Load `.env` file into string
     internal static func loadDotEnv(_ dotEnvPath: String = ".env") async -> String? {
+#if os(Windows)
+        // Windows: read the file via Foundation rather than POSIX read(2).
+        return try? String(contentsOfFile: dotEnvPath, encoding: .utf8)
+#else
         do {
             let fileHandle = try NIOFileHandle(path: dotEnvPath)
             defer {
@@ -181,6 +197,7 @@ public struct Environment: Sendable, Decodable, ExpressibleByDictionaryLiteral {
         } catch {
             return nil
         }
+#endif
     }
 
     /// Parse a `.env` file

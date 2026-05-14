@@ -20,8 +20,10 @@ public typealias HBApplicationConfiguration = ApplicationConfiguration
 public typealias HBApplicationProtocol = ApplicationProtocol
 @_documentation(visibility: internal) @available(*, unavailable, renamed: "Environment")
 public typealias HBEnvironment = Environment
+#if !os(Windows)
 @_documentation(visibility: internal) @available(*, unavailable, renamed: "FileIO")
 public typealias HBFileIO = FileIO
+#endif
 
 @_documentation(visibility: internal) @available(*, unavailable, renamed: "RequestContext")
 public typealias HBBaseRequestContext = RequestContext

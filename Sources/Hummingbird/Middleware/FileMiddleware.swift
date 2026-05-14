@@ -57,6 +57,7 @@ where Provider.FileAttributes: FileMiddlewareFileAttributes {
     ///   - searchForIndexHtml: Should we look for index.html in folders
     ///   - threadPool: ThreadPool used by file loading
     ///   - logger: Logger used to output file information
+#if !os(Windows)
     public init(
         _ rootFolder: String = "public",
         urlBasePath: String? = nil,
@@ -77,6 +78,7 @@ where Provider.FileAttributes: FileMiddlewareFileAttributes {
             mediaTypeFileExtensionMap: [:]
         )
     }
+#endif
 
     /// Create FileMiddleware using custom ``FileProvider``.
     /// - Parameters:

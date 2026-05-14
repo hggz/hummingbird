@@ -1,3 +1,9 @@
+// File-serving APIs in this file rely on POSIX file primitives (lstat,
+// readlink, getcwd, PATH_MAX, stat.st_mtimespec, NIOPosix's NonBlockingFileIO
+// lstat extensions) that aren't available on Windows MSVC. Hummingbird's
+// core HTTP routing path does not depend on this file; we gate it out so
+// the rest of the framework compiles on Windows. See WINDOWS_PATCHES.md.
+#if !os(Windows)
 //
 // This source file is part of the Hummingbird server framework project
 // Copyright (c) the Hummingbird authors
@@ -120,3 +126,5 @@ public struct LocalFileSystem: FileProvider {
         try await self.fileIO.loadFile(path: path, range: range, context: context)
     }
 }
+
+#endif // !os(Windows)
