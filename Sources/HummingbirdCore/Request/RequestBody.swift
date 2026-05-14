@@ -13,6 +13,7 @@
 //===----------------------------------------------------------------------===//
 
 import Collections
+import DequeModule
 public import NIOConcurrencyHelpers
 public import NIOCore
 package import NIOHTTPTypes
